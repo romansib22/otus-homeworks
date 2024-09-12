@@ -21,13 +21,14 @@ public class TestRunner {
 
         TreeMap<Integer, List<Method>> runOrderMap = new TreeMap<>(Comparator.reverseOrder());
         for (Method m : testSuiteClass.getDeclaredMethods()) {
-            if (m.isAnnotationPresent(BeforeSuite.class)) {
+            boolean isDisabled = m.isAnnotationPresent(Disabled.class);
+            if (m.isAnnotationPresent(BeforeSuite.class) && !isDisabled) {
                 runOrderMap.put(20, Collections.singletonList(m));
             }
-            if (m.isAnnotationPresent(AfterSuite.class)) {
+            if (m.isAnnotationPresent(AfterSuite.class) && !isDisabled) {
                 runOrderMap.put(0, Collections.singletonList(m));
             }
-            if (m.isAnnotationPresent(Test.class)) {
+            if (m.isAnnotationPresent(Test.class) && !isDisabled) {
                 Test annotation = m.getAnnotation(Test.class);
                 List<Method> methodList = runOrderMap.getOrDefault(annotation.priority(), new ArrayList<>());
                 methodList.add(m);
