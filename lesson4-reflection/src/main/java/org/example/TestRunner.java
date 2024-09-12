@@ -68,6 +68,7 @@ public class TestRunner {
         for (Method m : testSuiteClass.getDeclaredMethods()) {
             if (m.isAnnotationPresent(Disabled.class)) {
                 System.out.println("Method " + m.getName() + " disabled with message: "+ m.getAnnotation(Disabled.class).message());
+                continue;
             }
             boolean hasAnnotation = false;
             if (m.isAnnotationPresent(BeforeSuite.class)) {
