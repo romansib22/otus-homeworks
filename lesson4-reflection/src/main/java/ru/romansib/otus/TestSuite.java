@@ -1,9 +1,9 @@
-package org.example;
+package ru.romansib.otus;
 
-import org.example.annotations.AfterSuite;
-import org.example.annotations.BeforeSuite;
-import org.example.annotations.Disabled;
-import org.example.annotations.Test;
+import ru.romansib.otus.annotations.AfterSuite;
+import ru.romansib.otus.annotations.BeforeSuite;
+import ru.romansib.otus.annotations.Disabled;
+import ru.romansib.otus.annotations.Test;
 
 public class TestSuite {
 

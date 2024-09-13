@@ -1,10 +1,10 @@
-package org.example;
+package ru.romansib.otus;
 
-import org.example.annotations.AfterSuite;
-import org.example.annotations.BeforeSuite;
-import org.example.annotations.Disabled;
-import org.example.annotations.Test;
-import org.example.exceptions.NotValidTestSuiteException;
+import ru.romansib.otus.annotations.AfterSuite;
+import ru.romansib.otus.annotations.BeforeSuite;
+import ru.romansib.otus.annotations.Disabled;
+import ru.romansib.otus.annotations.Test;
+import ru.romansib.otus.exceptions.NotValidTestSuiteException;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -15,7 +15,7 @@ public class TestRunner {
         try {
             testsCount = checkTestSuiteClass(testSuiteClass);
         } catch (NotValidTestSuiteException e) {
-            System.out.println(e);
+            e.printStackTrace();
             return;
         }
 
@@ -70,7 +70,7 @@ public class TestRunner {
         int afterCount = 0;
         for (Method m : testSuiteClass.getDeclaredMethods()) {
             if (m.isAnnotationPresent(Disabled.class)) {
-                System.out.println("Method " + m.getName() + " disabled with message: "+ m.getAnnotation(Disabled.class).message());
+                System.out.println("Method " + m.getName() + " disabled with message: " + m.getAnnotation(Disabled.class).message());
                 continue;
             }
             boolean hasAnnotation = false;
@@ -87,6 +87,10 @@ public class TestRunner {
             if (m.isAnnotationPresent(Test.class) && hasAnnotation) {
                 throw new NotValidTestSuiteException("Method " + m.getName() + " has two annotations");
             } else if (m.isAnnotationPresent(Test.class) && !hasAnnotation) {
+                Test a = m.getAnnotation(Test.class);
+                if (a.priority() < 1 || a.priority() > 10) {
+                    throw new NotValidTestSuiteException("Annotation @Test on method " + m.getName() + " has not allowed priority (" + a.priority() + ")");
+                }
                 hasAnnotation = true;
             }
             if (hasAnnotation) {

@@ -1,4 +1,4 @@
-package org.example.annotations;
+package ru.romansib.otus.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -6,7 +6,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.TYPE})
-public @interface Disabled {
-    String message() default "disabled";
+@Target(ElementType.METHOD)
+public @interface AfterSuite {
 }
