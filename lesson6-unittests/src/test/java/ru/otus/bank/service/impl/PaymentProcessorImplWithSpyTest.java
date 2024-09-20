@@ -84,4 +84,47 @@ public class PaymentProcessorImplWithSpyTest {
 
     }
 
+    @Test
+    public void testMakeTransferWithComission() {
+        Agreement sourceAgreement = new Agreement();
+        sourceAgreement.setId(1L);
+
+        Agreement destinationAgreement = new Agreement();
+        destinationAgreement.setId(2L);
+
+        Account sourceAccount = new Account();
+        sourceAccount.setAmount(new BigDecimal(200));
+        sourceAccount.setType(0);
+        sourceAccount.setId(10L);
+
+        Account destinationAccount = new Account();
+        destinationAccount.setAmount(BigDecimal.ZERO);
+        destinationAccount.setType(0);
+        destinationAccount.setId(20L);
+
+        doReturn(List.of(sourceAccount)).when(accountService).getAccounts(argThat(new ArgumentMatcher<Agreement>() {
+            @Override
+            public boolean matches(Agreement argument) {
+                return argument != null && argument.getId() == 1L;
+            }
+        }));
+
+        doReturn(List.of(destinationAccount)).when(accountService).getAccounts(argThat(new ArgumentMatcher<Agreement>() {
+            @Override
+            public boolean matches(Agreement argument) {
+                return argument != null && argument.getId() == 2L;
+            }
+        }));
+
+        when(accountDao.findById(10L)).thenReturn(Optional.of(sourceAccount));
+        when(accountDao.findById(20L)).thenReturn(Optional.of(destinationAccount));
+
+
+        paymentProcessor.makeTransferWithComission(sourceAgreement, destinationAgreement,
+                0, 0, new BigDecimal(100), new BigDecimal("-0.1"));
+
+        assertEquals(new BigDecimal("90.0"), sourceAccount.getAmount());
+        assertEquals(new BigDecimal(100), destinationAccount.getAmount());
+    }
+
 }

@@ -4,11 +4,15 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mockito;
 import ru.otus.bank.dao.AgreementDao;
 import ru.otus.bank.entity.Agreement;
 
 import java.util.Optional;
+
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.verify;
 
 public class AgreementServiceImplTest {
 
@@ -56,4 +60,12 @@ public class AgreementServiceImplTest {
         Assertions.assertEquals(10, agreement.getId());
     }
 
+    @Test
+    public void testAddAgreementWithVerify() {
+        String name = "test";
+        ArgumentMatcher<Agreement> sourceMatcher =
+                argument -> argument.getName().equals(name);
+        agreementServiceImpl.addAgreement(name);
+        verify(dao).save(argThat(sourceMatcher));
+    }
 }
