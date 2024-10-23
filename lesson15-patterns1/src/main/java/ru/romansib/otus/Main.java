@@ -1,5 +1,7 @@
 package ru.romansib.otus;
 
+import java.math.BigDecimal;
+
 public class Main {
     public static void main(String[] args) {
 
@@ -7,7 +9,7 @@ public class Main {
                 .id(1)
                 .title("title")
                 .description("description")
-                .cost(100.0f)
+                .cost(new BigDecimal(100))
                 .weight(10)
                 .width(20)
                 .length(30)
@@ -15,10 +17,6 @@ public class Main {
                 .build();
 
         Box box = new Box();
-
-        MyIterator iterator = new MyIterator(box);
-        while (iterator.hasNext()) {
-            System.out.println(iterator.next());
-        }
+        box.showBoxContent();
     }
 }
