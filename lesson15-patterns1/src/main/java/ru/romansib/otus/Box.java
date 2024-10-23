@@ -81,7 +81,7 @@ public class Box {
                 throw new NoSuchElementException();
             }
             int result = currentList.get(currentIndex);
-            if (currentList == firstSection) {
+            if (currentList.equals(firstSection)) {
                 currentIndex--;
             }
             switchList();
@@ -91,12 +91,15 @@ public class Box {
         private void switchList() {
             if (currentList.equals(firstSection)) {
                 currentList = fourthSection;
+                return;
             }
             if (currentList.equals(secondSection)) {
                 currentList = firstSection;
+                return;
             }
             if (currentList.equals(thirdSection)) {
                 currentList = secondSection;
+                return;
             }
             if (currentList.equals(fourthSection)) {
                 currentList = thirdSection;
