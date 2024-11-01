@@ -4,11 +4,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-public class Box {
+public class Box implements Iterable<Integer> {
     private final List<Integer> firstSection = List.of(1, 5, 9, 13, 17);
     private final List<Integer> secondSection = List.of(2, 6, 10, 14, 18);
     private final List<Integer> thirdSection = List.of(3, 7, 11, 15, 19);
-    private final List<Integer> fourthSection = List.of(4, 8, 12, 16, 20);
+    private final List<Integer> fourthSection = List.of(4, 8, 12, 16, 20, 200);
 
 
     public List<Integer> getFirstSection() {
@@ -28,36 +28,33 @@ public class Box {
     }
 
     public void showBoxContent() {
-        BoxIterator iterator = new BoxIterator(this);
+        Iterator<Integer> iterator = iterator();
         while (iterator.hasNext()) {
-            System.out.println(iterator.next());
+            Integer nextval = iterator.next();
+            System.out.println(nextval == null ? "No element" : nextval);
         }
+    }
+
+    @Override
+    public Iterator<Integer> iterator() {
+        return new BoxIterator();
     }
 
     private class BoxIterator implements Iterator<Integer> {
         private int currentIndex;
         private List<Integer> currentList;
 
-        private final List<Integer> firstSection;
-        private final List<Integer> secondSection;
-        private final List<Integer> thirdSection;
-        private final List<Integer> fourthSection;
-
-        public BoxIterator(Box box) {
-            this.firstSection = box.getFirstSection();
-            this.secondSection = box.getSecondSection();
-            this.thirdSection = box.getThirdSection();
-            this.fourthSection = box.getFourthSection();
-            this.currentIndex = getMaxIndex(box);
+        public BoxIterator() {
+            this.currentIndex = getMaxIndex();
             this.currentList = fourthSection;
         }
 
-        private int getMaxIndex(Box box) {
+        private int getMaxIndex() {
             int maxIndex = 0;
-            maxIndex = compare(box.getFirstSection(), maxIndex);
-            maxIndex = compare(box.getSecondSection(), maxIndex);
-            maxIndex = compare(box.getThirdSection(), maxIndex);
-            maxIndex = compare(box.getFourthSection(), maxIndex);
+            maxIndex = compare(getFirstSection(), maxIndex);
+            maxIndex = compare(getSecondSection(), maxIndex);
+            maxIndex = compare(getThirdSection(), maxIndex);
+            maxIndex = compare(getFourthSection(), maxIndex);
             return maxIndex;
         }
 
@@ -77,10 +74,16 @@ public class Box {
 
         @Override
         public Integer next() {
+            Integer result;
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
-            int result = currentList.get(currentIndex);
+            if (currentList.size() < currentIndex + 1) {
+                result = null;
+            } else {
+                result = currentList.get(currentIndex);
+            }
+
             if (currentList.equals(firstSection)) {
                 currentIndex--;
             }
@@ -89,19 +92,19 @@ public class Box {
         }
 
         private void switchList() {
-            if (currentList.equals(firstSection)) {
+            if (currentList == firstSection) {
                 currentList = fourthSection;
                 return;
             }
-            if (currentList.equals(secondSection)) {
+            if (currentList == secondSection) {
                 currentList = firstSection;
                 return;
             }
-            if (currentList.equals(thirdSection)) {
+            if (currentList == thirdSection) {
                 currentList = secondSection;
                 return;
             }
-            if (currentList.equals(fourthSection)) {
+            if (currentList == fourthSection) {
                 currentList = thirdSection;
             }
         }
