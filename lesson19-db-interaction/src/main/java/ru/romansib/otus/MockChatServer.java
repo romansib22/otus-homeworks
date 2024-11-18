@@ -10,21 +10,39 @@ public class MockChatServer {
             dataSource = new DataSource("jdbc:h2:file:./db;MODE=PostgreSQL");
             dataSource.connect();
 
-            UsersDao usersDao = new UsersDao(dataSource);
-            usersDao.init();
-            System.out.println(usersDao.getAllUsers());
-//            usersDao.save(new User(null, "A", "A", "A"));
-//            System.out.println(usersDao.getAllUsers());
+            DbMigrator migrator = new DbMigrator(dataSource);
+            migrator.migrate();
+
+
             AbstractRepository<User> usersRepository = new AbstractRepository<>(dataSource, User.class);
+            usersRepository.save(new User(null, "A", "A", "A"));
             usersRepository.save(new User(null, "B", "B", "B"));
-            System.out.println(usersDao.getAllUsers());
+            usersRepository.save(new User(null, "C", "C", "C"));
 
-//            AuthenticationService authenticationService = new AuthenticationService(usersDao);
-//            UsersStatisticService usersStatisticService = new UsersStatisticService(usersDao);
-//            BonusService bonusService = new BonusService(dataSource);
-//            bonusService.init();
+            System.out.println("----------FIND BY ID_______");
+            User user = usersRepository.findById(1L);
+            System.out.println(user.toString());
 
-//            authenticationService.register("A", "A", "A");
+            System.out.println("----------FIND ALL_______");
+            for (User u : usersRepository.findAll()) {
+                System.out.println(u.toString());
+            }
+
+            System.out.println("----------UPDATE_______");
+            User user0 = usersRepository.findById(2L);
+            System.out.println(user0.toString());
+            User u = new User(2L,"C","C","A");
+            usersRepository.update(u);
+            user0 = usersRepository.findById(2L);
+            System.out.println(user0.toString());
+
+
+            System.out.println("----------DELETE_______");
+            usersRepository.deleteById(3L);
+            for (User u0 : usersRepository.findAll()) {
+                System.out.println(u0.toString());
+            }
+
             // Основная работа сервера чата
         } catch (SQLException e) {
             e.printStackTrace();

@@ -1,0 +1,1 @@
+create table if not exists bonuses (id bigserial primary key, amount int, login varchar(255));
