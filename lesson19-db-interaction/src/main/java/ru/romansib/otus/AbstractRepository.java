@@ -17,6 +17,7 @@ public class AbstractRepository<T> {
     private PreparedStatement psUpdate;
     private PreparedStatement psDelete;
     private List<Field> cachedFields;
+    private Map<String,String> cachedFieldNames;
     private List<Field> pkFields;
     private final UserMapper mapper;
     private final Map<Field, Method> fieldGetMethodMap = new HashMap<>();
@@ -25,6 +26,7 @@ public class AbstractRepository<T> {
     public AbstractRepository(DataSource dataSource, Class<T> cls) {
         this.dataSource = dataSource;
         fillCachedFields(cls);
+        fillCachedFieldNames(cls);
         fillPkFields(cls);
         fillGetMethodMap(cls);
         fillSetMethodMap(cls);
@@ -141,8 +143,7 @@ public class AbstractRepository<T> {
         // 'insert into users ('
 
         for (Field f : cachedFields) {
-            String fieldDbName = f.getAnnotation(RepositoryField.class).fieldName().isEmpty() ? f.getName() : f.getAnnotation(RepositoryField.class).fieldName();
-            query.append(fieldDbName).append(", ");
+            query.append(cachedFieldNames.get(f.getName())).append(", ");
         }
         // 'insert into users (login, password, nickname, '
         query.setLength(query.length() - 2);
@@ -170,22 +171,16 @@ public class AbstractRepository<T> {
 
         StringBuilder query = new StringBuilder("select ");
         for (Field f : pkFields) {
-            String fieldDbName = f.getAnnotation(RepositoryIdField.class).fieldName().isEmpty() ? f.getName() : f.getAnnotation(RepositoryIdField.class).fieldName();
-            query.append(fieldDbName).append(" ,");
+            query.append(cachedFieldNames.get(f.getName())).append(" ,");
         }
         for (Field f : cachedFields) {
-            String fieldDbName = f.getAnnotation(RepositoryField.class).fieldName().isEmpty() ? f.getName() : f.getAnnotation(RepositoryField.class).fieldName();
-            query.append(fieldDbName).append(" ,");
+            query.append(cachedFieldNames.get(f.getName())).append(" ,");
         }
         query.setLength(query.length() - 2);
         query.append(" from ").append(tableName).append(" where ");
 
         for (Field f : pkFields) {
-            if (f.getDeclaringClass() == String.class) {
-                query.append(f.getName()).append(" = '?' ,");
-            } else {
                 query.append(f.getName()).append(" = ? ,");
-            }
         }
         query.setLength(query.length() - 2);
         query.append(";");
@@ -204,12 +199,10 @@ public class AbstractRepository<T> {
 
         StringBuilder query = new StringBuilder("select ");
         for (Field f : pkFields) {
-            String fieldDbName = f.getAnnotation(RepositoryIdField.class).fieldName().isEmpty() ? f.getName() : f.getAnnotation(RepositoryIdField.class).fieldName();
-            query.append(fieldDbName).append(" ,");
+            query.append(cachedFieldNames.get(f.getName())).append(" ,");
         }
         for (Field f : cachedFields) {
-            String fieldDbName = f.getAnnotation(RepositoryField.class).fieldName().isEmpty() ? f.getName() : f.getAnnotation(RepositoryField.class).fieldName();
-            query.append(fieldDbName).append(" ,");
+            query.append(cachedFieldNames.get(f.getName())).append(" ,");
         }
         query.setLength(query.length() - 2);
         query.append(" from ").append(tableName);
@@ -232,14 +225,12 @@ public class AbstractRepository<T> {
         StringBuilder query = new StringBuilder("update ");
         query.append(tableName).append(" set ");
         for (Field f : cachedFields) {
-            String fieldDbName = f.getAnnotation(RepositoryField.class).fieldName().isEmpty() ? f.getName() : f.getAnnotation(RepositoryField.class).fieldName();
-            query.append(fieldDbName).append(" = ? ,");
+            query.append(cachedFieldNames.get(f.getName())).append(" = ? ,");
         }
         query.setLength(query.length() - 2);
         query.append(" where ");
         for (Field f : pkFields) {
-            String fieldDbName = f.getAnnotation(RepositoryIdField.class).fieldName().isEmpty() ? f.getName() : f.getAnnotation(RepositoryIdField.class).fieldName();
-            query.append(fieldDbName).append(" = ? AND");
+            query.append(cachedFieldNames.get(f.getName())).append(" = ? AND");
         }
         query.setLength(query.length() - 4);
         query.append(";");
@@ -259,8 +250,7 @@ public class AbstractRepository<T> {
         StringBuilder query = new StringBuilder("delete from ");
         query.append(tableName).append(" where ");
         for (Field f : pkFields) {
-            String fieldDbName = f.getAnnotation(RepositoryIdField.class).fieldName().isEmpty() ? f.getName() : f.getAnnotation(RepositoryIdField.class).fieldName();
-            query.append(fieldDbName).append(" = ? AND");
+            query.append(cachedFieldNames.get(f.getName())).append(" = ? AND");
         }
         query.setLength(query.length() - 4);
         query.append(";");
@@ -276,6 +266,17 @@ public class AbstractRepository<T> {
                 .filter(f -> f.isAnnotationPresent(RepositoryField.class))
                 .filter(f -> !f.isAnnotationPresent(RepositoryIdField.class))
                 .collect(Collectors.toList());
+    }
+
+    private void fillCachedFieldNames(Class cls) {
+        Arrays.stream(cls.getDeclaredFields()).forEach(f -> {
+            if (f.isAnnotationPresent(RepositoryField.class)) {
+                    cachedFieldNames.put(f.getName(), f.getAnnotation(RepositoryIdField.class).fieldName().isEmpty() ? f.getName() : f.getAnnotation(RepositoryIdField.class).fieldName());
+            }
+            if (f.isAnnotationPresent(RepositoryIdField.class)) {
+                cachedFieldNames.put(f.getName(), f.getAnnotation(RepositoryIdField.class).fieldName().isEmpty() ? f.getName() : f.getAnnotation(RepositoryIdField.class).fieldName());
+            }
+        });
     }
 
     private void fillPkFields(Class cls) {
