@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import ru.romansib.otus.Product;
+import ru.romansib.otus.exceptions.ProductNotFoundException;
 
 import java.util.Optional;
 
@@ -67,7 +68,7 @@ public class MenuServiceImpl implements MenuService {
         if (productOpt.isPresent()) {
             System.out.println(productOpt.get());
         } else {
-            System.out.println("Product with id " + productId + " not found!");
+            throw new ProductNotFoundException("Product with id " + productId + " not found!");
         }
     }
 
@@ -77,7 +78,7 @@ public class MenuServiceImpl implements MenuService {
         if (productOpt.isPresent()) {
             cart.addToCart(productOpt.get());
         } else {
-            System.out.println("Product with id " + productId + " not found!");
+            throw new ProductNotFoundException("Product with id " + productId + " not found!");
         }
     }
 

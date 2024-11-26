@@ -17,9 +17,7 @@ public class CartImpl implements Cart {
 
     @Override
     public void showCart() {
-        for (Product product : content) {
-            System.out.println(product);
-        }
+        content.forEach(System.out::println);
     }
 
     @Override
