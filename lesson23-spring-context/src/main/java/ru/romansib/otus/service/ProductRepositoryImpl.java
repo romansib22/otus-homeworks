@@ -16,7 +16,6 @@ public class ProductRepositoryImpl implements ProductRepository {
     @PostConstruct
     public void init() {
         for (int i = 0; i < 10; i++) {
-            Product.builder().build();
             productList.add(Product.builder()
                     .id((long) (i + 1))
                     .name("Product " + i + 1)
