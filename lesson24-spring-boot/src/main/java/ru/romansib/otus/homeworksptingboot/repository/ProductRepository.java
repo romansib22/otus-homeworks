@@ -13,12 +13,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class ProductRepository {
-    private Map<Long, Product> productTable = new ConcurrentHashMap<>();
+    private final Map<Long, Product> productTable = new ConcurrentHashMap<>();
+    private long productSequence = 1;
 
     @PostConstruct
     private void initProductTable() {
         for (int i = 0; i < 10; i++) {
-            productTable.put((i + 1L), Product.builder().id(i + 1L).name("Product number " + i + 1).price(new BigDecimal((i + 1) * 21 + 2)).build());
+            productTable.put(productSequence, Product.builder().id(productSequence).name("Product number " + productSequence).price(new BigDecimal((i + 1) * 21 + 2)).build());
+            productSequence++;
         }
     }
 
@@ -35,7 +37,8 @@ public class ProductRepository {
 
     public Product save(Product p) {
         if (p.getId() == null) {
-            p.setId((long) productTable.size() + 1);
+            p.setId(productSequence);
+            productSequence++;
         }
         productTable.put(p.getId(), p);
         return p;
