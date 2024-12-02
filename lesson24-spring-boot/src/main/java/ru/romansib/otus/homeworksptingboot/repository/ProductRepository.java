@@ -5,10 +5,7 @@ import org.springframework.stereotype.Component;
 import ru.romansib.otus.homeworksptingboot.entity.Product;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
@@ -25,14 +22,11 @@ public class ProductRepository {
     }
 
     public List<Product> getAll() {
-        return new ArrayList<>(productTable.values());
+        return Collections.unmodifiableList((List<? extends Product>) productTable.values());
     }
 
     public Optional<Product> getById(long id) {
-        if (productTable.containsKey(id)) {
-            return Optional.of(productTable.get(id));
-        }
-        return Optional.empty();
+        return Optional.ofNullable(productTable.get(id));
     }
 
     public Product save(Product p) {

@@ -14,26 +14,26 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/product")
+@RequestMapping("/products")
 public class ProductController {
     private final ProductService service;
     private final ProductMapper mapper;
 
-    @GetMapping("/all")
+    @GetMapping()
     public List<ProductDto> getAllProducts() {
         return mapper.toDto(service.getAll());
     }
 
     @GetMapping("/{id}")
-    public ProductDto getProductById(@PathVariable(name = "id") Long id) {
+    public ProductDto getProductById(@PathVariable Long id) {
         try {
-            return mapper.toDto(service.getById(id));
+            return mapper.toDto(service.getById(id).orElseThrow(() -> new ProductNotFoundException("Продукт с id " + id + " не найден!")));
         } catch (ProductNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
 
-    @PostMapping("/create")
+    @PostMapping
     public ProductDto createProduct(@RequestBody ProductDto dto) {
         try {
             return mapper.toDto(service.createProduct(mapper.fromDto(dto)));
@@ -42,7 +42,7 @@ public class ProductController {
         }
     }
 
-    @PutMapping("/update")
+    @PutMapping
     public ProductDto updateProduct(@RequestBody ProductDto dto) {
         try {
             return mapper.toDto(service.updateProduct(mapper.fromDto(dto)));
@@ -54,7 +54,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteProduct(@PathVariable(name = "id") Long id) {
+    public void deleteProduct(@PathVariable Long id) {
         try {
             service.deleteProduct(id);
         } catch (ProductNotFoundException e) {

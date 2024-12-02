@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.romansib.otus.homeworksptingboot.entity.Product;
 import ru.romansib.otus.homeworksptingboot.exceptions.ProductIdException;
 import ru.romansib.otus.homeworksptingboot.exceptions.ProductNotFoundException;
-
+import ru.romansib.otus.homeworksptingboot.repository.ProductRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,22 +13,22 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class ProductService {
-    private final ProductRepositoryService service;
+    private final ProductRepository repository;
 
     public List<Product> getAll() {
-        return service.getAll();
+        return repository.getAll();
     }
 
-    public Product getById(long id) {
-        Optional<Product> productOpt = service.getById(id);
-        return productOpt.orElseThrow(() -> new ProductNotFoundException("Продукт с id " + id + " не найден!"));
+    public Optional<Product> getById(long id) {
+        Optional<Product> productOpt = repository.getById(id);
+        return productOpt;
     }
 
     public Product createProduct(Product product) {
         if (product.getId() != null) {
             throw new ProductIdException("В запросе на создание указан id!");
         }
-        return service.save(product);
+        return repository.save(product);
     }
 
     public Product updateProduct(Product product) {
@@ -38,11 +38,10 @@ public class ProductService {
         Product productInDb = getById(product.getId());
         productInDb.setName(product.getName());
         productInDb.setPrice(product.getPrice());
-        return service.save(productInDb);
+        return repository.save(productInDb);
     }
 
     public void deleteProduct(Long id) {
-        Product p = getById(id);
-        service.delete(p.getId());
+        repository.delete(id);
     }
 }
