@@ -7,17 +7,18 @@ import ru.romansib.otus.homeworksptingboot.entity.Product;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Component
 public class ProductRepository {
     private final Map<Long, Product> productTable = new ConcurrentHashMap<>();
-    private long productSequence = 1;
+    private AtomicLong productSequence = new AtomicLong(1);
 
     @PostConstruct
     private void initProductTable() {
         for (int i = 0; i < 10; i++) {
-            productTable.put(productSequence, Product.builder().id(productSequence).name("Product number " + productSequence).price(new BigDecimal((i + 1) * 21 + 2)).build());
-            productSequence++;
+            long id = productSequence.getAndIncrement();
+            productTable.put(id, Product.builder().id(id).name("Product number " + productSequence).price(new BigDecimal((i + 1) * 21 + 2)).build());
         }
     }
 
@@ -31,8 +32,7 @@ public class ProductRepository {
 
     public Product save(Product p) {
         if (p.getId() == null) {
-            p.setId(productSequence);
-            productSequence++;
+            p.setId(productSequence.getAndIncrement());
         }
         productTable.put(p.getId(), p);
         return p;
