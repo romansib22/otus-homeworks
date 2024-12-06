@@ -1,11 +1,15 @@
 package ru.romansib.otus.lesson26.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "products_buyers")
+@Getter
+@Setter
 public class ProductsBuyers {
 
     @Id
@@ -29,15 +33,6 @@ public class ProductsBuyers {
     }
 
     public ProductsBuyers() {
-
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     @Override

@@ -14,7 +14,7 @@ import java.util.List;
 public class Main {
     private static BuyerDao buyerDao;
     private static ProductDao productDao;
-    
+
 
     public static void main(String[] args) {
         init();

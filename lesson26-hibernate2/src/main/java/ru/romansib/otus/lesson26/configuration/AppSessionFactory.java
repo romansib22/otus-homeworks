@@ -37,7 +37,7 @@ public class AppSessionFactory {
                 sessionFactory = configuration.buildSessionFactory(serviceRegistry);
 
             } catch (Exception e) {
-                System.out.println("Exception " + e);
+                log.error("Exception!", e);
             }
         }
         return sessionFactory;
