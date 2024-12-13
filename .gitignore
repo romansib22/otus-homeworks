@@ -41,3 +41,4 @@ bin/
 ### Mac OS ###
 .DS_Store
 .idea
+lesson28-jpql/src/main/resources/META-INF/persistence_local.xml
