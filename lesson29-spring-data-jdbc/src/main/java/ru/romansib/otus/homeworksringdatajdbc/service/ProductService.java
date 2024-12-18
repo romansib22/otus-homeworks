@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.romansib.otus.homeworksringdatajdbc.entity.Product;
 import ru.romansib.otus.homeworksringdatajdbc.exceptions.ProductIdException;
+import ru.romansib.otus.homeworksringdatajdbc.exceptions.ProductNotFoundException;
 import ru.romansib.otus.homeworksringdatajdbc.repository.ProductRepository;
 
 import java.util.List;
@@ -15,11 +16,11 @@ public class ProductService {
     private final ProductRepository repository;
 
     public List<Product> getAll() {
-        return repository.getAll();
+        return repository.findAll();
     }
 
     public Optional<Product> getById(long id) {
-        Optional<Product> productOpt = repository.getById(id);
+        Optional<Product> productOpt = repository.findById(id);
         return productOpt;
     }
 
@@ -31,16 +32,20 @@ public class ProductService {
     }
 
     public Product updateProduct(Product product) {
+
         if (product.getId() == null) {
             throw new ProductIdException("В запросе на изменение не указан id!");
         }
-        Product productInDb = getById(product.getId());
-        productInDb.setName(product.getName());
-        productInDb.setPrice(product.getPrice());
-        return repository.save(productInDb);
+        Optional<Product> productInDbOpt = getById(product.getId());
+        if (!productInDbOpt.isPresent()) {
+            throw new ProductNotFoundException("Не найден продукт с id = " + product.getId());
+        }
+        productInDbOpt.get().setName(product.getName());
+        productInDbOpt.get().setPrice(product.getPrice());
+        return repository.save(productInDbOpt.get());
     }
 
     public void deleteProduct(Long id) {
-        repository.delete(id);
+        repository.deleteById(id);
     }
 }
