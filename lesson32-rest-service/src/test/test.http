@@ -1,0 +1,38 @@
+###Получение всех счетов клиента
+GET localhost:8189/api/v1/accounts
+client-id: 1000000002
+
+###Получение счета клиента по id
+GET localhost:8189/api/v1/accounts/bbd96dbf-4d72-4563-8d97-6746ed2c5f31
+client-id: 1000000002
+
+###Получение чужого счета клиента по id
+GET localhost:8189/api/v1/accounts/141750ee-5810-4e41-bd4e-27822497882c
+client-id: 1000000002
+
+###Выполнение перевода от клиента 1000000001 клиенту 1000000002 на счёт с номером 100000000003
+POST localhost:8189/api/v1/transfers
+client-id: 1000000001
+Content-Type: application/json
+
+{
+  "targetClientId":"1000000002",
+  "sourceAccount": "100000000001",
+  "targetAccount": "100000000003",
+  "message":"Перевод от друга",
+  "amount": 15
+}
+
+
+###Выполнение перевода от клиента 1000000001 клиенту 1000000002 на счёт с номером 100000000003 на недопустимую сумму
+POST localhost:8189/api/v1/transfers
+client-id: 1000000001
+Content-Type: application/json
+
+{
+  "targetClientId":"1000000002",
+  "sourceAccount": "100000000001",
+  "targetAccount": "100000000003",
+  "message":"Перевод от друга",
+  "amount": 150
+}

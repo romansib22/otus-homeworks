@@ -25,4 +25,9 @@ public class GlobalExceptionHandler {
                 HttpStatus.UNPROCESSABLE_ENTITY
         );
     }
+
+    @ExceptionHandler(value = BusinessLogicException.class)
+    public ResponseEntity<ErrorDto> catchBusinessLogicException(BusinessLogicException e) {
+        return new ResponseEntity<>(new ErrorDto(e.getCode(), e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
 }
