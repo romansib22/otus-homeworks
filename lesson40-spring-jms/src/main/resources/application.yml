@@ -1,0 +1,29 @@
+server:
+  port: 8888
+spring:
+  application:
+    name: lesson40-spring-jms
+  kafka:
+    producer:
+      properties:
+#        schema.registry.url: http://localhost:8081
+        allow.auto.create.topics: true
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+#      interceptor.classes: io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor
+
+    consumer:
+      properties:
+#        schema.registry.url: http://localhost:8081
+        specific.avro.reader: false
+        allow.auto.create.topics: true
+        enable.auto.commit: false
+      bootstrap-servers: localhost:9092
+      group-id: local.otus
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+topic:
+  mytopic: local.otus
