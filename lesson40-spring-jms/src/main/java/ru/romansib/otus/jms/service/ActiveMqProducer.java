@@ -25,10 +25,6 @@ public class ActiveMqProducer {
 
     public void convertAndSend(String msg) {
         jmsTemplate.convertAndSend(ActiveMqJmsConfig.DESTINATION_NAME, msg);
+        log.info("Produced message {} to {}", msg, ActiveMqJmsConfig.DESTINATION_NAME);
     }
-
-    private String genId() {
-        return UUID.randomUUID().toString();
-    }
-
 }

@@ -7,12 +7,14 @@ import jakarta.jms.Message;
 import jakarta.jms.ObjectMessage;
 import jakarta.jms.TextMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Service;
 import ru.romansib.otus.jms.config.ActiveMqJmsConfig;
 
 import java.io.Serializable;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ActiveMqConsumer {
@@ -37,7 +39,7 @@ public class ActiveMqConsumer {
 
     private static void onTextMessage(TextMessage message) throws JMSException {
         String msg = message.getText();
-        System.out.format("[Received message] : %s\n", msg);
+        log.info("Consumed message {}", msg);
     }
 
     private void onObjectMessage(ObjectMessage message)
@@ -52,13 +54,13 @@ public class ActiveMqConsumer {
 
     private static void onSerializableObjectMessage(ObjectMessage message) throws JMSException {
         Serializable obj = message.getObject();
-        System.out.format("[Received serializable message] : %s\n", obj);
+        log.info("Consumed serializable message {}", obj);
     }
 
     private void onCustomObjectMessage(Class<?> cls, ObjectMessage message)
             throws JMSException, JsonProcessingException {
         String json = String.valueOf(message.getObject());
         Object obj = objectMapper.readValue(json, cls);
-        System.out.format("[Received custom message: %s] : %s\n", cls.getSimpleName(), obj);
+        log.info("Consumed custom message {}, {}", cls.getSimpleName(), obj);
     }
 }
